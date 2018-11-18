@@ -1,0 +1,39 @@
+//-----------------------------------------------------
+//SerialReceiveTest commitログ
+//-----------------------------------------------------
+
+---------------------------------------------------------------
+18xxxx by keitwo
+・
+
+■主な変更点
+
+■追加ファイル
+■削除ファイル
+■変更ファイル
+
+---------------------------------------------------------------
+181118 by keitwo
+・シリアルポートデータ受信テストプロジェクト
+
+■プロジェクト説明
+・このプロジェクトは、C#でシリアルポート(COMポート)を選択、接続し、
+　文字列を受信するテストプロジェクトです。
+
+・Visual Studio 2017での開発環境です。
+
+■追加ファイル
+README.md
+SerialReceiveTest.sln
+SerialReceiveTest/App.config
+SerialReceiveTest/Form1.Designer.cs
+SerialReceiveTest/Form1.cs
+SerialReceiveTest/Form1.resx
+SerialReceiveTest/Program.cs
+SerialReceiveTest/Properties/AssemblyInfo.cs
+SerialReceiveTest/Properties/Resources.Designer.cs
+SerialReceiveTest/Properties/Resources.resx
+SerialReceiveTest/Properties/Settings.Designer.cs
+SerialReceiveTest/Properties/Settings.settings
+SerialReceiveTest/SerialReceiveTest.csproj
+doc/commit_log_keitwo.txt
