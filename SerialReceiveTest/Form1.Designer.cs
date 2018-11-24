@@ -102,6 +102,7 @@
 			// 
 			// serialPort1
 			// 
+			this.serialPort1.BaudRate = 115200;
 			this.serialPort1.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.serialPort1_DataReceived);
 			// 
 			// button_MsgClear
