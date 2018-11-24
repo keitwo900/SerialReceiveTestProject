@@ -8,19 +8,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
+using System.Threading;
 
 namespace SerialReceiveTest
 {
 	public partial class Form1 : Form
 	{
-		const int RX_BUFFER_SIZE = 1024;
+		const int RX_BUFFER_SIZE = 1024; //2のべき乗とすること！
 		char[] tmpBuf; //受信一時バッファ
 		char[] ringBuf; //受信データ保持バッファ
 
 		int ri; //リードインデクス
 		int wi; //ライトインデクス
 
+		//データ処理関連
 		delegate void ShowDataDelegate();
+		ShowDataDelegate showDataDelegate;
+
+		//スレッド関連
+		bool isThreadRun;
+		Thread dataRxThread;
 
 		/// <summary>
 		/// コンストラクタ
@@ -32,6 +39,9 @@ namespace SerialReceiveTest
 			tmpBuf = new char[RX_BUFFER_SIZE];
 			ringBuf = new char[RX_BUFFER_SIZE];
 			serialPort1.Encoding = Encoding.UTF8; //エンコーディング指定
+
+			showDataDelegate = new ShowDataDelegate(ShowData); //デリゲートの関数登録
+			dataRxThread = new Thread(new ThreadStart(DataReceive)); //スレッドの関数登録
 		}
 
 		/// <summary>
@@ -63,6 +73,24 @@ namespace SerialReceiveTest
 
 		//-------------------------------------------------------------------
 		//-------------------------------------------------------------------
+		// スレッド
+		//-------------------------------------------------------------------
+		//-------------------------------------------------------------------
+
+		/// <summary>
+		/// 受信データ処理
+		/// </summary>
+		void DataReceive()
+		{
+			while(isThreadRun)
+			{
+				BeginInvoke(showDataDelegate); //データをこの関数の中で処理しきるならBeginInvoke。この関数内で処理したデータを、while内のこの関数の後で使用したいならInvokeに変更。
+				Thread.Sleep(1);
+			}
+		}
+
+		//-------------------------------------------------------------------
+		//-------------------------------------------------------------------
 		// 以下、フォームのイベント関連
 		//-------------------------------------------------------------------
 		//-------------------------------------------------------------------
@@ -81,6 +109,10 @@ namespace SerialReceiveTest
 			{
 				comboBox_ComName.Text = comboBox_ComName.Items[0].ToString();
 			}
+
+			//受信データ処理スレッド開始
+			dataRxThread.Start();
+			isThreadRun = true;
 		}
 
 		/// <summary>
@@ -142,8 +174,6 @@ namespace SerialReceiveTest
 				ringBuf[wi++] = tmpBuf[i];
 				wi &= RX_BUFFER_SIZE - 1; //リミッタ
 			}
-
-			BeginInvoke(new ShowDataDelegate(ShowData));
 		}
 
 		/// <summary>
@@ -154,6 +184,18 @@ namespace SerialReceiveTest
 		private void button_MsgClear_Click(object sender, EventArgs e)
 		{
 			textBox_ReceiveMsg.Clear();
+		}
+
+		/// <summary>
+		/// アプリ終了前処理
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			isThreadRun = false; //threadのwhile loopを抜ける
+			dataRxThread.Join(); //threadの終了待ち
+			dataRxThread = null;
 		}
 	}
 }
